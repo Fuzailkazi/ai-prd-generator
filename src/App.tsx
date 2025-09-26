@@ -123,8 +123,8 @@ Include Epic, Story, Acceptance Criteria, and Definition of Done.
   return (
     <>
       <div
-        className={`min-h-screen font-sans overflow-x-hidden ${
-          isDark ? "bg-black text-white" : "bg-white text-black"
+        className={`min-h-screen font-sans overflow-x-hidden transition-colors duration-900 ${
+          isDark ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"
         }`}
       >
         <Navbar isDark={isDark} setIsDark={setIsDark} />
@@ -172,15 +172,33 @@ Include Epic, Story, Acceptance Criteria, and Definition of Done.
             </button>
           </div>
         )}
-        <footer className="py-5 text-center">
-          <p className="text-gray-600 dark:text-gray-400 flex items-center justify-center gap-2">
+        <footer
+          className={`mt-10 py-5 text-center border-t transition-colors duration-300 ${
+            isDark ? "border-gray-700" : "border-gray-300"
+          }`}
+        >
+          <p
+            className={`flex items-center justify-center gap-2 transition-colors duration-300 ${
+              isDark ? "text-white" : "text-gray-800"
+            }`}
+          >
             Made with <span className="text-red-500">❤️</span> by{" "}
-            <span className="font-semibold">@fuzailkazi_</span>
+            <span
+              className={`font-semibold ${
+                isDark ? "text-white" : "text-gray-800"
+              }`}
+            >
+              @fuzailkazi_
+            </span>
             <a
               href="https://twitter.com/fuzailkazi_"
               target="_blank"
               rel="noopener noreferrer"
-              className="ml-2 hover:text-blue-500 transition-colors"
+              className={`ml-2 transition-colors duration-300 ${
+                isDark
+                  ? "text-white hover:text-blue-400"
+                  : "text-gray-800 hover:text-blue-500"
+              }`}
             >
               <Twitter size={18} />
             </a>

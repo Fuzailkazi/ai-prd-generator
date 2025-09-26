@@ -9,7 +9,7 @@ interface NavbarProps {
 
 const Navbar = ({ isDark, setIsDark }: NavbarProps) => {
   return (
-    <header className="text-gray-600 body-font px-[100px]">
+    <header className=" body-font px-[100px]">
       <div className="container mx-auto flex p-5 flex-col md:flex-row items-center">
         {/* Logo */}
         <a className="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
