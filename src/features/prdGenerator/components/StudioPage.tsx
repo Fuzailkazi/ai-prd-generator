@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import type { PrdDocument, PrdFormData, PrdSection, TemplateType } from '../types/prd.types';
-import { EMPTY_FORM } from '../types/prd.types';
+import { EMPTY_FORMS, getFormTitle } from '../types/prd.types';
 import { usePrdGeneration } from '../hooks/usePrdGeneration';
 import { usePrdHistory } from '../hooks/usePrdHistory';
 import HistoryRail from './HistoryRail';
@@ -8,7 +8,7 @@ import PrdForm from './PrdForm';
 import PrdOutput from './PrdOutput';
 
 export default function StudioPage() {
-  const [formData, setFormData] = useState<PrdFormData>(EMPTY_FORM);
+  const [formData, setFormData] = useState<PrdFormData>(EMPTY_FORMS.feature);
   const [activeDocId, setActiveDocId] = useState<string | null>(null);
   const { streamContent, isGenerating, error, generate, regenerateSection } = usePrdGeneration();
   const { history, save, remove } = usePrdHistory();
@@ -18,7 +18,7 @@ export default function StudioPage() {
       const content = await generate(formData);
       const doc: PrdDocument = {
         id: crypto.randomUUID(),
-        title: formData.productName || 'Untitled PRD',
+        title: getFormTitle(formData),
         rawContent: content,
         formData,
         createdAt: Date.now(),
@@ -26,7 +26,16 @@ export default function StudioPage() {
       save(doc);
       setActiveDocId(doc.id);
     } catch {
-      // error is set in hook
+      // error surfaced via hook
+    }
+  };
+
+  const handleFormChange = (data: PrdFormData) => {
+    // Reset form when template switches
+    if (data.template !== formData.template) {
+      setFormData(EMPTY_FORMS[data.template]);
+    } else {
+      setFormData(data);
     }
   };
 
@@ -36,17 +45,16 @@ export default function StudioPage() {
   };
 
   const handleTemplateSelect = (t: TemplateType) => {
-    setFormData(prev => ({ ...prev, template: t }));
-  };
-
-  const handleNewPrd = () => {
-    setFormData(EMPTY_FORM);
+    setFormData(EMPTY_FORMS[t]);
     setActiveDocId(null);
   };
 
-  const handleSectionsChange = useCallback((_sections: PrdSection[]) => {
-    // Could persist section edits back to history here if needed
-  }, []);
+  const handleNewPrd = () => {
+    setFormData(EMPTY_FORMS[formData.template]);
+    setActiveDocId(null);
+  };
+
+  const handleSectionsChange = useCallback((_sections: PrdSection[]) => {}, []);
 
   return (
     <div className="h-screen flex flex-col bg-[#F8F8F5] overflow-hidden">
@@ -63,7 +71,7 @@ export default function StudioPage() {
         <PrdForm
           formData={formData}
           isGenerating={isGenerating}
-          onChange={setFormData}
+          onChange={handleFormChange}
           onGenerate={handleGenerate}
         />
         <PrdOutput

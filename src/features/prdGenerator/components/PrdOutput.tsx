@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import type { PrdSection, PrdFormData } from '../types/prd.types';
+import { getFormTitle } from '../types/prd.types';
 import { parsePrdSections, stripMarkdown } from '../utils/parseSections';
 
 interface PrdOutputProps {
@@ -202,7 +203,7 @@ export default function PrdOutput({
   };
 
   const downloadMd = () => {
-    const name = formData.productName.trim() || 'PRD';
+    const name = getFormTitle(formData);
     const blob = new Blob([streamContent], { type: 'text/markdown' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -236,7 +237,7 @@ export default function PrdOutput({
       <div className="flex items-center justify-between px-5 py-3 bg-white border-b border-[#E4E4DF] shrink-0">
         <div className="flex items-center gap-3">
           <h2 className="text-[12px] font-bold text-[#18181B] truncate max-w-[200px]">
-            {formData.productName || 'PRD Document'}
+            {getFormTitle(formData)}
           </h2>
           {isGenerating && (
             <span className="flex items-center gap-1.5 text-[9px] text-green-600 font-semibold bg-green-50 border border-green-200 rounded-full px-2 py-0.5">
