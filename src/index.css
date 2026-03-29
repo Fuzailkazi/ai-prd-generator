@@ -1,18 +1,53 @@
 @import "tailwindcss";
+
 @theme {
   --font-unbounded: "Unbounded", sans-serif;
 }
-:root {
-  font-family: "Unbounded",system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: white;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Unbounded", sans-serif;
+  background-color: #F8F8F5;
+  color: #18181B;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+/* Hide scrollbar visually but keep scroll behavior */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Thin, subtle scrollbar for main scroll areas */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #D4D4D0;
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #A1A1AA;
 }
