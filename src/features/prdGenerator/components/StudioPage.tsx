@@ -194,8 +194,8 @@ export default function StudioPage() {
 
           {/* Headline */}
           <h1 className="text-[42px] sm:text-[52px] font-black text-[#18181B] text-center leading-[1.1] tracking-tight max-w-[640px] mb-4">
-            Generate PRDs{' '}
-            <span className="text-green-600">in seconds.</span>
+            Generate PRDs in{' '}
+            <span className="text-green-600">seconds.</span>
           </h1>
           <p className="text-[13px] text-[#71717A] text-center max-w-[420px] leading-relaxed mb-10">
             Describe your product idea. Get a comprehensive, structured PRD ready to share with your team.
