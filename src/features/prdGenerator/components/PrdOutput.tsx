@@ -228,97 +228,80 @@ export default function PrdOutput({
   }
 
   if (!streamContent && !isGenerating) {
-    return <div className="flex-1 bg-[#F8F8F5]"><EmptyState /></div>;
+    return <EmptyState />;
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-[#F8F8F5] overflow-hidden">
-      {/* Top bar */}
-      <div className="flex items-center justify-between px-5 py-3 bg-white border-b border-[#E4E4DF] shrink-0">
-        <div className="flex items-center gap-3">
-          <h2 className="text-[12px] font-bold text-[#18181B] truncate max-w-[200px]">
-            {getFormTitle(formData)}
-          </h2>
+    <div className="w-full">
+      {/* Export bar + section nav */}
+      {(streamContent || isGenerating) && (
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+          {/* Section nav pills */}
+          {sections.length > 0 && !isGenerating && (
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {sections.map(s => (
+                <button
+                  key={s.id}
+                  onClick={() => scrollToSection(s.id)}
+                  className={`text-[9px] font-semibold px-2.5 py-1 rounded-full border transition-all cursor-pointer whitespace-nowrap ${
+                    activeSection === s.id
+                      ? 'bg-[#18181B] text-white border-[#18181B]'
+                      : 'bg-white text-[#71717A] border-[#E4E4DF] hover:border-[#C8C8C2] hover:text-[#18181B]'
+                  }`}
+                >
+                  {s.title}
+                </button>
+              ))}
+            </div>
+          )}
           {isGenerating && (
-            <span className="flex items-center gap-1.5 text-[9px] text-green-600 font-semibold bg-green-50 border border-green-200 rounded-full px-2 py-0.5">
-              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-              Generating
+            <span className="flex items-center gap-1.5 text-[10px] text-green-600 font-semibold">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              Writing your PRD...
             </span>
           )}
-        </div>
-        {streamContent && !isGenerating && (
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={copyMarkdown}
-              className="text-[9px] font-medium text-[#71717A] hover:text-[#18181B] px-2.5 py-1.5 rounded-lg border border-[#E4E4DF] hover:border-[#C8C8C2] bg-white transition-colors cursor-pointer"
-            >
-              {copied === 'md' ? '✓ Copied' : 'Copy MD'}
-            </button>
-            <button
-              onClick={copyPlainText}
-              className="text-[9px] font-medium text-[#71717A] hover:text-[#18181B] px-2.5 py-1.5 rounded-lg border border-[#E4E4DF] hover:border-[#C8C8C2] bg-white transition-colors cursor-pointer"
-            >
-              {copied === 'text' ? '✓ Copied' : 'Copy Text'}
-            </button>
-            <button
-              onClick={downloadMd}
-              className="text-[9px] font-semibold text-white bg-[#18181B] hover:bg-[#27272A] px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
-            >
-              Download .md
-            </button>
-          </div>
-        )}
-      </div>
 
-      {/* Section nav pills */}
-      {sections.length > 0 && !isGenerating && (
-        <div className="flex items-center gap-1.5 px-5 py-2.5 bg-white border-b border-[#E4E4DF] overflow-x-auto shrink-0 scrollbar-none">
-          {sections.map(s => (
-            <button
-              key={s.id}
-              onClick={() => scrollToSection(s.id)}
-              className={`shrink-0 text-[9px] font-semibold px-2.5 py-1 rounded-full border transition-all cursor-pointer whitespace-nowrap ${
-                activeSection === s.id
-                  ? 'bg-[#18181B] text-white border-[#18181B]'
-                  : 'bg-white text-[#71717A] border-[#E4E4DF] hover:border-[#C8C8C2] hover:text-[#18181B]'
-              }`}
-            >
-              {s.title}
-            </button>
-          ))}
+          {/* Export buttons */}
+          {streamContent && !isGenerating && (
+            <div className="flex items-center gap-1.5 ml-auto">
+              <button onClick={copyMarkdown} className="text-[9px] font-medium text-[#71717A] hover:text-[#18181B] px-2.5 py-1.5 rounded-lg border border-[#E4E4DF] hover:border-[#C8C8C2] bg-white transition-colors cursor-pointer">
+                {copied === 'md' ? '✓ Copied' : 'Copy MD'}
+              </button>
+              <button onClick={copyPlainText} className="text-[9px] font-medium text-[#71717A] hover:text-[#18181B] px-2.5 py-1.5 rounded-lg border border-[#E4E4DF] hover:border-[#C8C8C2] bg-white transition-colors cursor-pointer">
+                {copied === 'text' ? '✓ Copied' : 'Copy Text'}
+              </button>
+              <button onClick={downloadMd} className="text-[9px] font-semibold text-white bg-[#18181B] hover:bg-green-700 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer">
+                Download .md
+              </button>
+            </div>
+          )}
         </div>
       )}
 
-      {/* Content */}
-      <div ref={streamRef} className="flex-1 overflow-y-auto px-5 py-5">
-        {isGenerating ? (
-          /* Streaming view */
-          <div className="max-w-[800px] mx-auto">
-            <div className="bg-white rounded-xl border border-[#E4E4DF] px-6 py-5">
-              <div className="prose-prd text-[11px] text-[#3F3F46] leading-relaxed whitespace-pre-wrap">
-                {streamContent}
-                <span className="inline-block w-0.5 h-3.5 bg-green-500 ml-0.5 animate-pulse align-middle" />
-              </div>
+      {/* Streaming view */}
+      {isGenerating && (
+        <div ref={streamRef} className="bg-white rounded-2xl border border-[#E4E4DF] px-8 py-6 shadow-sm">
+          <div className="text-[11px] text-[#3F3F46] leading-relaxed whitespace-pre-wrap">
+            {streamContent}
+            <span className="inline-block w-0.5 h-3.5 bg-green-500 ml-0.5 animate-pulse align-middle" />
+          </div>
+        </div>
+      )}
+
+      {/* Sections view */}
+      {!isGenerating && sections.length > 0 && (
+        <div className="space-y-3">
+          {sections.map(s => (
+            <div key={s.id} ref={el => { sectionRefs.current[s.id] = el; }}>
+              <SectionCard
+                section={s}
+                onRegenerate={title => onRegenerateSection(title, formData)}
+                onUpdate={handleSectionUpdate}
+              />
             </div>
-          </div>
-        ) : (
-          /* Sections view */
-          <div className="max-w-[800px] mx-auto space-y-3">
-            {sections.map(s => (
-              <div
-                key={s.id}
-                ref={el => { sectionRefs.current[s.id] = el; }}
-              >
-                <SectionCard
-                  section={s}
-                  onRegenerate={title => onRegenerateSection(title, formData)}
-                  onUpdate={handleSectionUpdate}
-                />
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
