@@ -36,7 +36,7 @@ export default function HistoryRail({
       {/* Logo + New */}
       <div className="px-4 pt-5 pb-4 border-b border-[#E4E4DF]">
         <div className="flex items-center justify-between">
-          <span className="text-[15px] font-bold tracking-tight text-[#18181B]">ChatPRD</span>
+          <span className="text-[15px] font-bold tracking-tight text-[#18181B]">Prodably</span>
           <button
             onClick={onNewPrd}
             className="text-[10px] font-semibold text-green-700 bg-green-50 hover:bg-green-100 border border-green-200 rounded-md px-2 py-1 transition-colors cursor-pointer"

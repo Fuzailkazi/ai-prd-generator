@@ -14,7 +14,7 @@ const Navbar = ({ isDark, setIsDark }: NavbarProps) => {
         {/* Logo */}
         <a className="flex title-font font-medium items-center text-gray-900 mb-4 sm:mb-0">
           <span className="ml-3 font-unbounded text-2xl sm:text-3xl bg-gradient-to-br from-green-300 to-green-700 bg-clip-text text-transparent">
-            ChatPRD
+            Prodably
           </span>
         </a>
 

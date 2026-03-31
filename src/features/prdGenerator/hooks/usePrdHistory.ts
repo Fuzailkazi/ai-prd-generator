@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import type { PrdDocument } from '../types/prd.types';
 
-const STORAGE_KEY = 'chatprd_history';
+const STORAGE_KEY = 'prodably_history';
 const MAX_ITEMS = 20;
 
 function loadFromStorage(): PrdDocument[] {

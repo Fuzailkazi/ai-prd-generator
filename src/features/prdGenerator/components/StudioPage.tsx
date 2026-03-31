@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import type { PrdDocument, PrdFormData, PrdSection, TemplateType } from '../types/prd.types';
+import type { PrdDocument, PrdFormData, TemplateType } from '../types/prd.types';
 import { EMPTY_FORMS, getFormTitle, TEMPLATE_META } from '../types/prd.types';
 import { usePrdGeneration } from '../hooks/usePrdGeneration';
 import { usePrdHistory } from '../hooks/usePrdHistory';
@@ -87,18 +87,41 @@ function HistoryDropdown({
   );
 }
 
+const SESSION_KEY = 'prodably_session';
+
+function loadSession(): { formData: PrdFormData; content: string } | null {
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveSession(formData: PrdFormData, content: string) {
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify({ formData, content }));
+}
+
+function clearSession() {
+  sessionStorage.removeItem(SESSION_KEY);
+}
+
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function StudioPage() {
-  const [formData, setFormData] = useState<PrdFormData>(EMPTY_FORMS.feature);
-  const [viewState, setViewState] = useState<ViewState>('idle');
-  const [, setActiveDocId] = useState<string | null>(null);
+  const session = loadSession();
+  const [formData, setFormData] = useState<PrdFormData>(session?.formData ?? EMPTY_FORMS.feature);
+  const [viewState, setViewState] = useState<ViewState>(session ? 'done' : 'idle');
+  const [restoredContent, setRestoredContent] = useState<string>(session?.content ?? '');
   const { streamContent, isGenerating, error, generate, regenerateSection } = usePrdGeneration();
   const { history, save, remove } = usePrdHistory();
   const outputRef = useRef<HTMLDivElement>(null);
 
-  const handleGenerate = async () => {
+  const activeContent = streamContent || restoredContent;
+
+  const handleGenerate = useCallback(async () => {
     setViewState('generating');
+    setRestoredContent('');
     try {
       const content = await generate(formData);
       const doc: PrdDocument = {
@@ -109,12 +132,12 @@ export default function StudioPage() {
         createdAt: Date.now(),
       };
       save(doc);
-      setActiveDocId(doc.id);
+      saveSession(formData, content);
       setViewState('done');
     } catch {
       setViewState('idle');
     }
-  };
+  }, [formData, generate, save]);
 
   const handleFormChange = (data: PrdFormData) => {
     if (data.template !== formData.template) {
@@ -126,13 +149,15 @@ export default function StudioPage() {
 
   const handleDocSelect = (doc: PrdDocument) => {
     setFormData(doc.formData);
-    setActiveDocId(doc.id);
+    setRestoredContent(doc.rawContent);
+    saveSession(doc.formData, doc.rawContent);
     setViewState('done');
   };
 
   const handleNewPrd = () => {
+    clearSession();
+    setRestoredContent('');
     setFormData(EMPTY_FORMS[formData.template]);
-    setActiveDocId(null);
     setViewState('idle');
   };
 
@@ -140,7 +165,7 @@ export default function StudioPage() {
     setFormData(EMPTY_FORMS[t]);
   };
 
-  const handleSectionsChange = useCallback((_sections: PrdSection[]) => {}, []);
+  const handleSectionsChange = useCallback(() => {}, []);
 
   // Scroll to output when generation starts
   useEffect(() => {
@@ -158,7 +183,7 @@ export default function StudioPage() {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [viewState, formData]);
+  }, [viewState, handleGenerate]);
 
   return (
     <div className="min-h-screen bg-[#FAFAF8] overflow-x-hidden" style={{ backgroundImage: 'radial-gradient(ellipse 80% 40% at 50% 0%, rgba(22,163,74,0.07) 0%, transparent 70%)' }}>
@@ -169,7 +194,7 @@ export default function StudioPage() {
           onClick={handleNewPrd}
           className="text-[15px] font-black tracking-tight text-[#18181B] hover:text-green-700 transition-colors cursor-pointer"
         >
-          ChatPRD
+          Prodably
         </button>
         <div className="flex items-center gap-2">
           <HistoryDropdown history={history} onSelect={handleDocSelect} onDelete={remove} />
@@ -194,8 +219,8 @@ export default function StudioPage() {
 
           {/* Headline */}
           <h1 className="text-[42px] sm:text-[52px] font-black text-[#18181B] text-center leading-[1.1] tracking-tight max-w-[640px] mb-4">
-            Generate PRDs in{' '}
-            <span className="text-green-600">seconds.</span>
+            Prodably your next{' '}
+            <span className="text-green-600">PRD.</span>
           </h1>
           <p className="text-[13px] text-[#71717A] text-center max-w-[420px] leading-relaxed mb-10">
             Describe your product idea. Get a comprehensive, structured PRD ready to share with your team.
@@ -258,7 +283,7 @@ export default function StudioPage() {
 
           <main className="max-w-[860px] mx-auto px-6 py-8">
             <PrdOutput
-              streamContent={streamContent}
+              streamContent={activeContent}
               isGenerating={isGenerating}
               error={error}
               formData={formData}

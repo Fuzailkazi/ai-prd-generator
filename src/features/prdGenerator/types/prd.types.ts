@@ -123,7 +123,7 @@ export const TEMPLATE_FIELDS: Record<TemplateType, FieldConfig[]> = {
     {
       key: 'productName',
       label: 'Product Name',
-      hint: 'e.g. ChatPRD, Stripe for Africa',
+      hint: 'e.g. Prodably, Stripe for Africa',
     },
     {
       key: 'problemMarketGap',
